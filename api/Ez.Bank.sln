@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ez.Bank.Core", "Ez.Bank.Core\Ez.Bank.Core.csproj", "{1B3D7D36-030D-4CD5-8DFD-B5602AD94270}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ez.Bank.Claims", "Ez.Bank.Claims\Ez.Bank.Claims.csproj", "{5D8360AD-1085-452F-954E-A8823980019B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ez.Bank.FunctionsApi", "Ez.Bank.FunctionsApi\Ez.Bank.FunctionsApi.csproj", "{29E72726-C354-4644-8D7A-679689B47A9C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ez.Bank.UnitTests", "Ez.Bank.UnitTests\Ez.Bank.UnitTests.csproj", "{6C889B86-9297-431F-B2DB-6EC62F70670B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1B3D7D36-030D-4CD5-8DFD-B5602AD94270}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B3D7D36-030D-4CD5-8DFD-B5602AD94270}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B3D7D36-030D-4CD5-8DFD-B5602AD94270}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B3D7D36-030D-4CD5-8DFD-B5602AD94270}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D8360AD-1085-452F-954E-A8823980019B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D8360AD-1085-452F-954E-A8823980019B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D8360AD-1085-452F-954E-A8823980019B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D8360AD-1085-452F-954E-A8823980019B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29E72726-C354-4644-8D7A-679689B47A9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29E72726-C354-4644-8D7A-679689B47A9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29E72726-C354-4644-8D7A-679689B47A9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29E72726-C354-4644-8D7A-679689B47A9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C889B86-9297-431F-B2DB-6EC62F70670B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C889B86-9297-431F-B2DB-6EC62F70670B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C889B86-9297-431F-B2DB-6EC62F70670B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C889B86-9297-431F-B2DB-6EC62F70670B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

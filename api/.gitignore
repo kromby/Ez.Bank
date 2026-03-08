@@ -1,0 +1,17 @@
+## .NET
+bin/
+obj/
+
+## User-specific files
+*.user
+*.suo
+*.userprefs
+
+## Local settings
+local.settings.json
+local-storage/
+
+## IDE
+.vs/
+.vscode/
+*.swp
