@@ -53,9 +53,9 @@ export function Dashboard({ role, creditorId, debtorKennitala }: DashboardProps)
       ) : (
         <>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-            <StatCard label="Total Claims" value={totalClaims.toString()} />
-            <StatCard label="Total Amount" value={`${totalAmount.toLocaleString('is-IS')} ISK`} />
-            <StatCard label="Total Paid" value={`${totalPaid.toLocaleString('is-IS')} ISK`} />
+            <StatCard label="Total claims" value={totalClaims.toString()} />
+            <StatCard label="Total amount" value={`${totalAmount.toLocaleString('is-IS')} ISK`} />
+            <StatCard label="Total paid" value={`${totalPaid.toLocaleString('is-IS')} ISK`} />
             <StatCard label="Paid" value={paidClaims.toString()} color="text-green-600" />
             <StatCard label="Overdue" value={overdueClaims.toString()} color="text-red-600" />
             <StatCard label="Disputed" value={disputedClaims.toString()} color="text-orange-600" />
