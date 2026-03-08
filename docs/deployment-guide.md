@@ -199,10 +199,6 @@ on:
     paths: ['demo/**']
   workflow_dispatch:
 
-env:
-  NODE_VERSION: '22.x'
-  APP_PATH: 'demo/ez-bank-demo'
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -210,31 +206,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: ${{ env.APP_PATH }}/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-        working-directory: ${{ env.APP_PATH }}
-
-      - name: Build
-        run: npm run build
-        working-directory: ${{ env.APP_PATH }}
-        env:
-          VITE_API_BASE_URL: ${{ secrets.API_BASE_URL }}
-
       - name: Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: upload
-          app_location: ${{ env.APP_PATH }}/dist
-          skip_app_build: true
+          app_location: demo/ez-bank-demo
+          output_location: dist
+        env:
+          VITE_API_BASE_URL: ${{ secrets.API_BASE_URL }}
 ```
+
+The `Azure/static-web-apps-deploy` action uses Oryx to detect the Node.js project and run `npm install` + `npm run build` automatically. The `output_location` tells it where the build output is relative to `app_location`.
+
+> **Important:** The `branches` trigger must match the production branch configured on the Static Web App in Azure. If your default branch is `master` instead of `main`, change it in both the workflow and the Azure resource (Portal > Static Web App > Configuration > Production branch).
 
 ### Demo App Configuration
 

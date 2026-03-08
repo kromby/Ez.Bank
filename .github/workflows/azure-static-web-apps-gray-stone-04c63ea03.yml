@@ -43,6 +43,7 @@ jobs:
           app_location: "/demo/ez-bank-demo" # App source code path
           output_location: "dist" # Built app content directory - optional
           github_id_token: ${{ steps.idtoken.outputs.result }}
+          production_branch: "update/init-impl"
           ###### End of Repository/Build Configurations ######
 
   close_pull_request_job:
