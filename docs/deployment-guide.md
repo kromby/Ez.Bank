@@ -10,6 +10,8 @@ Create a single Resource Group (e.g., `rg-ezbank-prod`) containing:
 | **Function App** | `func-ezbank-claims-<env>` | .NET 8 Isolated, Linux, Flex Consumption plan. |
 | **Application Insights** | `appi-ezbank-<env>` | Connected to the Function App for logging and monitoring. |
 
+| **Static Web App** | `stapp-ezbank-demo-<env>` | Hosts the React demo application. Free tier is sufficient for dev/staging. |
+
 That's it for v1. No SQL Server, no Key Vault, no VNet.
 
 ### Storage Account Setup
@@ -68,6 +70,13 @@ az functionapp config appsettings set \
   --name "func-ezbank-claims-$ENV" \
   --resource-group $RG \
   --settings "APPINSIGHTS_INSTRUMENTATIONKEY=$APPINSIGHTS_KEY"
+
+# Static Web App (React demo)
+az staticwebapp create \
+  --name "stapp-ezbank-demo-$ENV" \
+  --resource-group $RG \
+  --location $LOCATION \
+  --sku Free
 ```
 
 ---
@@ -177,16 +186,100 @@ jobs:
           publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
 ```
 
+### Demo App Workflow
+
+Create `.github/workflows/demo-ci.yml`:
+
+```yaml
+name: Deploy Demo App
+
+on:
+  push:
+    branches: [main]
+    paths: ['demo/**']
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Azure Static Web Apps
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: upload
+          app_location: demo/ez-bank-demo
+          output_location: dist
+        env:
+          VITE_API_BASE_URL: ${{ secrets.API_BASE_URL }}
+```
+
+The `Azure/static-web-apps-deploy` action uses Oryx to detect the Node.js project and run `npm install` + `npm run build` automatically. The `output_location` tells it where the build output is relative to `app_location`.
+
+> **Important:** The `branches` trigger must match the production branch configured on the Static Web App in Azure. If your default branch is `master` instead of `main`, change it in both the workflow and the Azure resource (Portal > Static Web App > Configuration > Production branch).
+
+### Demo App Configuration
+
+The demo app needs to know the API URL in production. Set the `VITE_API_BASE_URL` environment variable at build time.
+
+#### GitHub Secrets for the Demo App
+
+| Secret | Value | How to Get It |
+|---|---|---|
+| `AZURE_STATIC_WEB_APPS_API_TOKEN` | Deployment token | Azure Portal > Static Web App > Overview > "Manage deployment token" |
+| `API_BASE_URL` | `https://func-ezbank-claims-prod.azurewebsites.net/api` | The Function App URL with `/api` suffix |
+
+#### API Proxy Configuration (Production)
+
+In production the demo app runs on a different domain than the API, so CORS must be configured on the Function App:
+
+```bash
+az functionapp cors add \
+  --name "func-ezbank-claims-$ENV" \
+  --resource-group $RG \
+  --allowed-origins "https://<static-web-app-hostname>"
+```
+
+Get the Static Web App hostname:
+```bash
+az staticwebapp show \
+  --name "stapp-ezbank-demo-$ENV" \
+  --resource-group $RG \
+  --query "defaultHostname" -o tsv
+```
+
+#### Custom Domain (Optional)
+
+```bash
+az staticwebapp hostname set \
+  --name "stapp-ezbank-demo-$ENV" \
+  --resource-group $RG \
+  --hostname "demo.ezbank.is"
+```
+
 ---
 
 ## Deployment Checklist
 
+### API
 1. **Create Azure resources** (Resource Group, Storage Account, Function App, App Insights)
 2. **Set Function App settings** (AUTH_PASSWORD, JWT_SECRET, AZURE_STORAGE_CONNECTION, etc.)
 3. **Download publish profile** from Azure Portal
 4. **Add GitHub secrets** (AZURE_FUNCTIONAPP_PUBLISH_PROFILE, AZURE_FUNCTIONAPP_NAME)
 5. **Push to main** — the workflow builds, tests, and deploys automatically
 6. **Verify** — hit `https://func-ezbank-claims-prod.azurewebsites.net/api/health`
+
+### Demo App
+7. **Create Static Web App** (via CLI or Portal)
+8. **Get deployment token** from Azure Portal > Static Web App > "Manage deployment token"
+9. **Add GitHub secrets** (AZURE_STATIC_WEB_APPS_API_TOKEN, API_BASE_URL)
+10. **Configure CORS** on the Function App to allow the Static Web App origin
+11. **Push to main** (changes in `demo/`) — the workflow builds and deploys automatically
+12. **Verify** — open the Static Web App URL in a browser
 
 ---
 
@@ -205,8 +298,8 @@ func azure functionapp publish func-ezbank-claims-prod
 
 Repeat the Azure resource creation for each environment (`dev`, `staging`, `prod`) with different resource names and settings. Use separate GitHub environments with environment-specific secrets, or create separate workflow files per environment.
 
-| Environment | Resource Group | Storage Account | Function App |
-|---|---|---|---|
-| dev | `rg-ezbank-dev` | `stdevezbank` | `func-ezbank-claims-dev` |
-| staging | `rg-ezbank-staging` | `ststagingezbank` | `func-ezbank-claims-staging` |
-| prod | `rg-ezbank-prod` | `stprodezbank` | `func-ezbank-claims-prod` |
+| Environment | Resource Group | Storage Account | Function App | Static Web App |
+|---|---|---|---|---|
+| dev | `rg-ezbank-dev` | `stdevezbank` | `func-ezbank-claims-dev` | `stapp-ezbank-demo-dev` |
+| staging | `rg-ezbank-staging` | `ststagingezbank` | `func-ezbank-claims-staging` | `stapp-ezbank-demo-staging` |
+| prod | `rg-ezbank-prod` | `stprodezbank` | `func-ezbank-claims-prod` | `stapp-ezbank-demo-prod` |
